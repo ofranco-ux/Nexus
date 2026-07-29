@@ -347,6 +347,18 @@
         .form-group input, .form-group select { width: 100%; }
 
         .lock-icon { font-size: 2.8rem; margin-bottom: 0.8rem; display: block; opacity: 0.8; }
+        
+        .demo-credentials-box {
+            background: var(--bg-subtle);
+            border: 1px dashed var(--border-color);
+            padding: 0.75rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.75rem;
+            text-align: left;
+            margin-top: 1rem;
+            color: var(--text-secondary);
+        }
+        .demo-credentials-box strong { color: var(--primary); }
     </style>
 
     <!-- FIREBASE JS (COMPAT) -->
@@ -360,26 +372,36 @@
         <div class="modal-box" style="text-align:center;">
             <div style="width:50px; height:50px; background:linear-gradient(135deg, var(--primary), #818cf8); border-radius:12px; margin:0 auto 1rem auto; display:flex; align-items:center; justify-content:center; color:white; font-size:1.5rem; font-weight:800;">N</div>
             <h2>Acceso a Nexus</h2>
-            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1.5rem;">Ingresa tus credenciales operativas</p>
+            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1.5rem;">Ingresa tu ID registrado para iniciar</p>
             
             <div class="form-group">
-                <label>👤 Nombre Completo</label>
-                <input type="text" id="loginName" placeholder="Ej. Juan Pérez">
+                <label>🆔 ID / Extensión</label>
+                <input type="text" id="loginExt" placeholder="Ej. A-00000 o AG-01" oninput="window.App.autoDetectUserRole()" onkeyup="if(event.key==='Enter') window.App.login()">
             </div>
             <div class="form-group">
-                <label>🆔 ID / Extensión</label>
-                <input type="text" id="loginExt" placeholder="Ej. ID-1001">
+                <label>👤 Nombre Completo</label>
+                <input type="text" id="loginName" placeholder="Ej. Coordinador Demo" onkeyup="if(event.key==='Enter') window.App.login()">
             </div>
             <div class="form-group">
                 <label>🎯 Rol Operativo</label>
                 <select id="loginRole">
-                    <option value="agent">Agente</option>
-                    <option value="supervisor">Supervisor</option>
                     <option value="coordinator">Coordinador</option>
+                    <option value="supervisor">Supervisor</option>
+                    <option value="agent">Agente</option>
                 </select>
             </div>
-            <p id="loginError" style="color:var(--danger); font-size:0.825rem; display:none; margin-bottom:1rem; font-weight:600; text-align:left;"></p>
-            <button onclick="window.App.login()" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">🔑 Iniciar Sesión</button>
+            
+            <p id="loginError" style="color:var(--danger); font-size:0.825rem; display:none; margin-bottom:1rem; font-weight:600; text-align:left; padding: 0.6rem; background: rgba(239, 68, 68, 0.1); border-radius: 6px;"></p>
+            
+            <button onclick="window.App.login()" class="btn btn-primary" style="width:100%; margin-top:0.2rem;">🔑 Iniciar Sesión</button>
+
+            <!-- GUÍA DE PRUEBA RÁPIDA -->
+            <div class="demo-credentials-box">
+                <div style="font-weight:700; margin-bottom:4px; color:var(--text-primary);">💡 Cuentas creadas por defecto:</div>
+                • <strong>Coordinador Demo:</strong> ID <code>A-00000</code><br>
+                • <strong>Supervisor Demo:</strong> ID <code>SUP-01</code><br>
+                • <strong>Agente Demo:</strong> ID <code>AG-01</code>
+            </div>
         </div>
     </div>
 
@@ -667,7 +689,7 @@
                         this.firestoreDb.collection('users').onSnapshot(snapshot => {
                             this.users = [];
                             snapshot.forEach(doc => this.users.push(doc.data()));
-                            this._checkMasterUser();
+                            this._checkDefaultUsers();
                             if (onSyncCallback) onSyncCallback();
                         });
 
@@ -687,46 +709,68 @@
                 const localData = this._readLocal();
                 this.users = localData.users;
                 this.logs = localData.logs;
-                this._checkMasterUser();
+                this._checkDefaultUsers();
                 if (onSyncCallback) onSyncCallback();
             },
 
-            _checkMasterUser() {
-                if (!this.users.some(u => u.extension === 'A-38873')) {
-                    this.saveUser({
-                        name: 'Jorge Padilla', extension: 'A-38873', role: 'coordinator',
-                        status: 'offline', scheduleStart: '09:00', scheduleEnd: '18:00', supervisor: '', coordinator: ''
-                    });
+            _checkDefaultUsers() {
+                let store = this._readLocal();
+                let changed = false;
+
+                const defaultUsers = [
+                    { name: 'Jorge Padilla', extension: 'A-38873', role: 'coordinator', status: 'offline', scheduleStart: '09:00', scheduleEnd: '18:00', supervisor: '', coordinator: '' },
+                    { name: 'Coordinador Demo', extension: 'A-00000', role: 'coordinator', status: 'offline', scheduleStart: '09:00', scheduleEnd: '18:00', supervisor: '', coordinator: '' },
+                    { name: 'Supervisor Demo', extension: 'SUP-01', role: 'supervisor', status: 'offline', scheduleStart: '09:00', scheduleEnd: '18:00', supervisor: '', coordinator: 'Coordinador Demo' },
+                    { name: 'Agente Demo', extension: 'AG-01', role: 'agent', status: 'offline', scheduleStart: '09:00', scheduleEnd: '18:00', supervisor: 'Supervisor Demo', coordinator: 'Coordinador Demo' }
+                ];
+
+                defaultUsers.forEach(def => {
+                    if (!this.users.some(u => String(u.extension).toLowerCase() === String(def.extension).toLowerCase())) {
+                        if (!this.isCloud) {
+                            store.users.push(def);
+                            changed = true;
+                        }
+                    }
+                });
+
+                if (changed && !this.isCloud) {
+                    this._writeLocal(store);
+                    this.users = store.users;
                 }
             },
 
             getUsers() { return this.users; },
             
             getUserByExt(ext) { 
-                return this.users.find(u => String(u.extension).toLowerCase() === String(ext).toLowerCase()); 
+                if (!ext) return null;
+                return this.users.find(u => String(u.extension).toLowerCase().trim() === String(ext).toLowerCase().trim()); 
             },
 
             async saveUser(userObj) {
-                if (this.isCloud) {
-                    await this.firestoreDb.collection('users').doc(userObj.extension).set(userObj, { merge: true });
-                } else {
-                    const store = this._readLocal();
-                    const idx = store.users.findIndex(u => String(u.extension) === String(userObj.extension));
-                    if (idx >= 0) store.users[idx] = { ...store.users[idx], ...userObj };
-                    else store.users.push(userObj);
-                    this._writeLocal(store);
-                    this.users = store.users;
-                }
+                try {
+                    if (this.isCloud && this.firestoreDb) {
+                        await this.firestoreDb.collection('users').doc(userObj.extension).set(userObj, { merge: true });
+                    } else {
+                        const store = this._readLocal();
+                        const idx = store.users.findIndex(u => String(u.extension).toLowerCase() === String(userObj.extension).toLowerCase());
+                        if (idx >= 0) store.users[idx] = { ...store.users[idx], ...userObj };
+                        else store.users.push(userObj);
+                        this._writeLocal(store);
+                        this.users = store.users;
+                    }
+                } catch(e) { console.warn("Error guardando usuario:", e); }
             },
 
             async updateStatus(ext, status) {
-                if (this.isCloud) {
-                    await this.firestoreDb.collection('users').doc(ext).set({ status }, { merge: true });
-                } else {
-                    const store = this._readLocal();
-                    const user = store.users.find(u => String(u.extension) === String(ext));
-                    if (user) { user.status = status; this._writeLocal(store); this.users = store.users; }
-                }
+                try {
+                    if (this.isCloud && this.firestoreDb) {
+                        await this.firestoreDb.collection('users').doc(ext).set({ status }, { merge: true });
+                    } else {
+                        const store = this._readLocal();
+                        const user = store.users.find(u => String(u.extension).toLowerCase() === String(ext).toLowerCase());
+                        if (user) { user.status = status; this._writeLocal(store); this.users = store.users; }
+                    }
+                } catch(e) { console.warn("Error actualizando estado:", e); }
             },
 
             async addLog(entry) {
@@ -738,15 +782,17 @@
                     ...entry
                 };
 
-                if (this.isCloud) {
-                    await this.firestoreDb.collection('logs').add(log);
-                } else {
-                    const store = this._readLocal();
-                    log.id = store.nextId++;
-                    store.logs.push(log);
-                    this._writeLocal(store);
-                    this.logs = store.logs;
-                }
+                try {
+                    if (this.isCloud && this.firestoreDb) {
+                        await this.firestoreDb.collection('logs').add(log);
+                    } else {
+                        const store = this._readLocal();
+                        log.id = store.nextId++;
+                        store.logs.push(log);
+                        this._writeLocal(store);
+                        this.logs = store.logs;
+                    }
+                } catch(e) { console.warn("Error agregando log:", e); }
             },
 
             getLogs() { return this.logs; },
@@ -839,7 +885,7 @@
                 const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
                 const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
                 const s = String(seconds % 60).padStart(2, '0');
-                return ${h}:${m}:${s};
+                return `${h}:${m}:${s}`;
             },
 
             formatMinsToHHMMSS(totalMins) {
@@ -848,7 +894,7 @@
                 const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
                 const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
                 const s = String(totalSeconds % 60).padStart(2, '0');
-                return ${h}:${m}:${s};
+                return `${h}:${m}:${s}`;
             }
         };
 
@@ -868,24 +914,24 @@
                     const metrics = WFM.calcularMetricasDelDia(u.extension, today);
                     
                     const rowData = [
-                        "${u.name}", 
-                        "${u.extension}", 
-                        "${u.status}", 
-                        "${u.scheduleStart}-${u.scheduleEnd}", 
-                        "${u.supervisor || '-'}", 
-                        "${u.coordinator || '-'}",
+                        `"${u.name}"`, 
+                        `"${u.extension}"`, 
+                        `"${u.status}"`, 
+                        `"${u.scheduleStart}-${u.scheduleEnd}"`, 
+                        `"${u.supervisor || '-'}"`, 
+                        `"${u.coordinator || '-'}"`,
                         metrics.logins, 
                         metrics.pausasCount, 
-                        "${metrics.adherencia.toFixed(2)}%", 
-                        "${metrics.productividad.toFixed(2)}%", 
-                        "${metrics.ocupacion.toFixed(2)}%",
-                        ="${WFM.formatMinsToHHMMSS(metrics.tiempoActivo)}", 
-                        ="${WFM.formatMinsToHHMMSS(metrics.tiempoPausaTotal)}",
-                        ="${WFM.formatMinsToHHMMSS(metrics.tiempoNetoDisponible)}"
+                        `"${metrics.adherencia.toFixed(2)}%"`, 
+                        `"${metrics.productividad.toFixed(2)}%"`, 
+                        `"${metrics.ocupacion.toFixed(2)}%"`,
+                        `="${WFM.formatMinsToHHMMSS(metrics.tiempoActivo)}"`, 
+                        `="${WFM.formatMinsToHHMMSS(metrics.tiempoPausaTotal)}"`,
+                        `="${WFM.formatMinsToHHMMSS(metrics.tiempoNetoDisponible)}"`
                     ];
 
                     WFM.tiposDePausa.forEach(pt => {
-                        rowData.push(="${WFM.formatMinsToHHMMSS(metrics.desglosePausas[pt] || 0)}");
+                        rowData.push(`="${WFM.formatMinsToHHMMSS(metrics.desglosePausas[pt] || 0)}"`);
                     });
 
                     return rowData;
@@ -896,7 +942,7 @@
                 
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = Nexus_Reporte_WFM_${new Date().toISOString().split('T')[0]}.csv;
+                a.download = `Nexus_Reporte_WFM_${new Date().toISOString().split('T')[0]}.csv`;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -913,6 +959,18 @@
                 this.updateClock();
                 setInterval(() => this.updateClock(), 1000);
                 if(localStorage.getItem('nexus_theme') === 'dark') this.toggleTheme(true);
+            },
+
+            autoDetectUserRole() {
+                const extInput = document.getElementById('loginExt').value.trim();
+                if (!extInput) return;
+                const user = DB.getUserByExt(extInput);
+                if (user && user.role) {
+                    document.getElementById('loginRole').value = user.role;
+                    if (user.name) {
+                        document.getElementById('loginName').value = user.name;
+                    }
+                }
             },
 
             refreshActiveViews() {
@@ -942,15 +1000,15 @@
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
                 document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
                 
-                document.getElementById(tab-${tabId}).classList.add('active');
-                document.querySelector(.menu-item[data-tab="${tabId}"])?.classList.add('active');
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+                document.querySelector(`.menu-item[data-tab="${tabId}"]`)?.classList.add('active');
 
                 this.refreshActiveViews();
             },
 
-            updateStatusUI(status, type = '') {
+            async updateStatusUI(status, type = '') {
                 if (!this.state.user) return;
-                DB.updateStatus(this.state.user.extension, status);
+                await DB.updateStatus(this.state.user.extension, status);
                 const badge = document.getElementById('uiStatusBadge');
                 if (!badge) return;
 
@@ -958,7 +1016,7 @@
                     badge.textContent = '🟢 Disponible';
                     badge.className = 'status-badge ready';
                 } else if (status === 'break') {
-                    badge.textContent = 🔵 Pausa (${type.toUpperCase()});
+                    badge.textContent = `🔵 Pausa (${type.toUpperCase()})`;
                     badge.className = 'status-badge break';
                 } else {
                     badge.textContent = '⚪ Desconectado';
@@ -967,61 +1025,64 @@
             },
 
             async login() {
-                const nameInput = document.getElementById('loginName').value.trim();
-                const extInput = document.getElementById('loginExt').value.trim();
-                const roleInput = document.getElementById('loginRole').value;
                 const err = document.getElementById('loginError');
-
-                if (!nameInput || !extInput) {
-                    err.textContent = '⚠️ Ingresa tu nombre completo y tu extensión.';
-                    err.style.display = 'block';
-                    return;
-                }
-
-                const user = DB.getUserByExt(extInput);
-                
-                if (!user) {
-                    err.textContent = ❌ El ID "${extInput}" no está registrado. Si eres nuevo, solicita tu alta en Administración.;
-                    err.style.display = 'block';
-                    return;
-                }
-
-                if (user.name.toLowerCase().trim() !== nameInput.toLowerCase().trim()) {
-                    err.textContent = ❌ El nombre no coincide con el ID registrado ("${user.name}").;
-                    err.style.display = 'block';
-                    return;
-                }
-
-                if (user.role !== roleInput) {
-                    const rolesMap = { 'agent': 'Agente', 'supervisor': 'Supervisor', 'coordinator': 'Coordinador' };
-                    err.textContent = ⚠️ Este ID tiene asignado el rol de "${rolesMap[user.role] || user.role}". Selecciona dicho rol para acceder.;
-                    err.style.display = 'block';
-                    return;
-                }
-
-                // BLOQUEO DOBLE SESIÓN
-                if (user.status !== 'offline') {
-                    const override = confirm('⚠️ Esta extensión figura con una sesión activa. ¿Deseas forzar el inicio de sesión aquí?');
-                    if (!override) return;
-                }
-
                 err.style.display = 'none';
-                this.state.user = user;
-                this.state.sessionStart = Date.now();
-                await this.updateStatusUI('ready');
-                
-                if (user.role === 'agent') {
-                    await DB.addLog({ agentName: user.name, extension: user.extension, role: user.role, eventType: 'login', details: 'Ingreso al sistema' });
-                }
+                err.textContent = '';
 
-                document.getElementById('loginOverlay').classList.add('hidden');
-                document.getElementById('menuLogoutBtn').classList.remove('hidden');
-                this.updateMenuVisibility();
-                this.updateAgentDashboard();
-                this.switchTab(user.role === 'agent' ? 'agent' : user.role);
-                
-                if (user.role === 'agent') {
-                    this.state.generalInterval = setInterval(() => this.updateAgentRealTime(), 1000);
+                try {
+                    const extInput = document.getElementById('loginExt').value.trim();
+                    const nameInput = document.getElementById('loginName').value.trim();
+                    const roleInput = document.getElementById('loginRole').value;
+
+                    if (!extInput) {
+                        err.textContent = '⚠️ Por favor ingresa tu ID / Extensión.';
+                        err.style.display = 'block';
+                        return;
+                    }
+
+                    const user = DB.getUserByExt(extInput);
+                    
+                    if (!user) {
+                        err.textContent = `❌ El ID "${extInput}" no existe. Para probar puedes usar A-00000 u AG-01.`;
+                        err.style.display = 'block';
+                        return;
+                    }
+
+                    if (nameInput && user.name.toLowerCase().trim() !== nameInput.toLowerCase().trim()) {
+                        err.textContent = `❌ El nombre no coincide con el ID registrado ("${user.name}").`;
+                        err.style.display = 'block';
+                        return;
+                    }
+
+                    // Auto-asignar rol correcto si difiere
+                    if (user.role !== roleInput) {
+                        document.getElementById('loginRole').value = user.role;
+                    }
+
+                    this.state.user = user;
+                    this.state.sessionStart = Date.now();
+                    
+                    await this.updateStatusUI('ready');
+                    
+                    if (user.role === 'agent') {
+                        await DB.addLog({ agentName: user.name, extension: user.extension, role: user.role, eventType: 'login', details: 'Ingreso al sistema' });
+                    }
+
+                    document.getElementById('loginOverlay').classList.add('hidden');
+                    document.getElementById('menuLogoutBtn').classList.remove('hidden');
+                    
+                    this.updateMenuVisibility();
+                    this.updateAgentDashboard();
+                    this.switchTab(user.role === 'agent' ? 'agent' : user.role);
+                    
+                    if (user.role === 'agent') {
+                        if (this.state.generalInterval) clearInterval(this.state.generalInterval);
+                        this.state.generalInterval = setInterval(() => this.updateAgentRealTime(), 1000);
+                    }
+                } catch (e) {
+                    console.error("Error en login:", e);
+                    err.textContent = `❌ Error al iniciar sesión: ${e.message || e}`;
+                    err.style.display = 'block';
                 }
             },
 
@@ -1070,7 +1131,7 @@
                 document.getElementById('breakMenu').style.display = 'none';
                 document.getElementById('agentControls').style.display = 'none';
                 document.getElementById('activeBreakBanner').style.display = 'flex';
-                document.getElementById('uiBreakLabel').textContent = ⏸️ PAUSA ACTIVA: ${type.toUpperCase()};
+                document.getElementById('uiBreakLabel').textContent = `⏸️ PAUSA ACTIVA: ${type.toUpperCase()}`;
 
                 this.state.breakInterval = setInterval(() => {
                     const segs = Math.floor((Date.now() - this.state.breakStart) / 1000);
@@ -1092,7 +1153,7 @@
                     eventType: 'break', 
                     breakType: this.state.breakType, 
                     durationSeconds: durationSegs, 
-                    details: Pausa (${this.state.breakType.toUpperCase()}) - ${durationMins} min 
+                    details: `Pausa (${this.state.breakType.toUpperCase()}) - ${durationMins} min` 
                 });
 
                 this.state.breakType = null;
@@ -1134,7 +1195,7 @@
                 
                 document.getElementById('uiAgentName').textContent = u.name;
                 document.getElementById('uiAgentExt').textContent = u.extension;
-                document.getElementById('uiAgentSchedule').textContent = ${u.scheduleStart} - ${u.scheduleEnd};
+                document.getElementById('uiAgentSchedule').textContent = `${u.scheduleStart} - ${u.scheduleEnd}`;
                 
                 this.updateAgentRealTime();
             },
@@ -1150,9 +1211,9 @@
                 
                 document.getElementById('statLogins').textContent = metrics.logins;
                 document.getElementById('statBreaks').textContent = metrics.pausasCount;
-                document.getElementById('statAdherence').textContent = ${metrics.adherencia.toFixed(2)}%;
-                document.getElementById('statProductivity').textContent = ${metrics.productividad.toFixed(2)}%;
-                document.getElementById('statOcupacion').textContent = ${metrics.ocupacion.toFixed(2)}%;
+                document.getElementById('statAdherence').textContent = `${metrics.adherencia.toFixed(2)}%`;
+                document.getElementById('statProductivity').textContent = `${metrics.productividad.toFixed(2)}%`;
+                document.getElementById('statOcupacion').textContent = `${metrics.ocupacion.toFixed(2)}%`;
             },
 
             renderHistory() {
@@ -1165,7 +1226,7 @@
                 if(!logs.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin registros acumulados</td></tr>'; return; }
                 
                 tbody.innerHTML = logs.map(l => {
-                    let dur = l.durationSeconds ? ${Math.floor(l.durationSeconds/60)} min : '-';
+                    let dur = l.durationSeconds ? `${Math.floor(l.durationSeconds/60)} min` : '-';
                     let eventLabel = l.eventType === 'login' ? '🔑 Ingreso' : (l.eventType === 'logout' ? '🚪 Salida' : '⏸️ Pausa');
                     
                     return `<tr>
@@ -1216,13 +1277,13 @@
                 if(!targetSel) return;
 
                 targetSel.innerHTML = '<option value="">Seleccionar Usuario...</option>' + 
-                    users.filter(u=>u.role==='agent' || u.role==='supervisor').map(u => <option value="${u.extension}">${u.name} (${u.extension})</option>).join('');
+                    users.filter(u=>u.role==='agent' || u.role==='supervisor').map(u => `<option value="${u.extension}">${u.name} (${u.extension})</option>`).join('');
                 
                 supSel.innerHTML = '<option value="">Asignar Supervisor...</option>' + 
-                    users.filter(u=>u.role==='supervisor').map(u => <option value="${u.name}">${u.name}</option>).join('');
+                    users.filter(u=>u.role==='supervisor').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
 
                 coordSel.innerHTML = '<option value="">Asignar Coordinador...</option>' + 
-                    users.filter(u=>u.role==='coordinator').map(u => <option value="${u.name}">${u.name}</option>).join('');
+                    users.filter(u=>u.role==='coordinator').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
             },
 
             async registerUser() {
@@ -1233,7 +1294,7 @@
                 if(DB.getUserByExt(ext)) return alert('Este ID ya está registrado.');
                 
                 await DB.saveUser({ name, extension: ext, role, status: 'offline', scheduleStart: '09:00', scheduleEnd: '18:00', supervisor: '', coordinator: '' });
-                alert(✅ Usuario "${name}" registrado exitosamente.);
+                alert(`✅ Usuario "${name}" registrado exitosamente.`);
                 document.getElementById('newUserName').value = '';
                 document.getElementById('newUserExt').value = '';
                 this.refreshActiveViews();
@@ -1267,9 +1328,9 @@
                 const coordSel = document.getElementById('editCoordinator');
 
                 supSel.innerHTML = '<option value="">Sin Asignar</option>' + 
-                    users.filter(u=>u.role==='supervisor').map(u => <option value="${u.name}">${u.name}</option>).join('');
+                    users.filter(u=>u.role==='supervisor').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
                 coordSel.innerHTML = '<option value="">Sin Asignar</option>' + 
-                    users.filter(u=>u.role==='coordinator').map(u => <option value="${u.name}">${u.name}</option>).join('');
+                    users.filter(u=>u.role==='coordinator').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
 
                 document.getElementById('editOriginalExt').value = user.extension;
                 document.getElementById('editExt').value = user.extension;

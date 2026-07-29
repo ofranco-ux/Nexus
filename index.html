@@ -260,6 +260,8 @@
         .btn-primary:hover { background: var(--primary-hover); }
         .btn-success { background: var(--success); }
         .btn-warning { background: var(--warning); color: #000; }
+        .btn-danger { background: var(--danger); }
+        .btn-danger:hover { background: var(--danger-hover); }
         .btn-secondary { background: var(--text-secondary); }
         .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.825rem; }
 
@@ -347,18 +349,6 @@
         .form-group input, .form-group select { width: 100%; }
 
         .lock-icon { font-size: 2.8rem; margin-bottom: 0.8rem; display: block; opacity: 0.8; }
-        
-        .demo-credentials-box {
-            background: var(--bg-subtle);
-            border: 1px dashed var(--border-color);
-            padding: 0.75rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            text-align: left;
-            margin-top: 1rem;
-            color: var(--text-secondary);
-        }
-        .demo-credentials-box strong { color: var(--primary); }
     </style>
 
     <!-- FIREBASE JS (COMPAT) -->
@@ -376,11 +366,11 @@
             
             <div class="form-group">
                 <label>🆔 ID / Extensión</label>
-                <input type="text" id="loginExt" placeholder="Ej. A-00000 o AG-01" oninput="window.App.autoDetectUserRole()" onkeyup="if(event.key==='Enter') window.App.login()">
+                <input type="text" id="loginExt" placeholder="Ej. A-00000" oninput="window.App.autoDetectUserRole()" onkeyup="if(event.key==='Enter') window.App.login()">
             </div>
             <div class="form-group">
                 <label>👤 Nombre Completo</label>
-                <input type="text" id="loginName" placeholder="Ej. Coordinador Demo" onkeyup="if(event.key==='Enter') window.App.login()">
+                <input type="text" id="loginName" placeholder="Ej. Tu Nombre" onkeyup="if(event.key==='Enter') window.App.login()">
             </div>
             <div class="form-group">
                 <label>🎯 Rol Operativo</label>
@@ -393,15 +383,7 @@
             
             <p id="loginError" style="color:var(--danger); font-size:0.825rem; display:none; margin-bottom:1rem; font-weight:600; text-align:left; padding: 0.6rem; background: rgba(239, 68, 68, 0.1); border-radius: 6px;"></p>
             
-            <button onclick="window.App.login()" class="btn btn-primary" style="width:100%; margin-top:0.2rem;">🔑 Iniciar Sesión</button>
-
-            <!-- GUÍA DE PRUEBA RÁPIDA -->
-            <div class="demo-credentials-box">
-                <div style="font-weight:700; margin-bottom:4px; color:var(--text-primary);">💡 Cuentas creadas por defecto:</div>
-                • <strong>Coordinador Demo:</strong> ID <code>A-00000</code><br>
-                • <strong>Supervisor Demo:</strong> ID <code>SUP-01</code><br>
-                • <strong>Agente Demo:</strong> ID <code>AG-01</code>
-            </div>
+            <button onclick="window.App.login()" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">🔑 Iniciar Sesión</button>
         </div>
     </div>
 
@@ -409,7 +391,7 @@
     <div id="editUserModal" class="modal-overlay hidden">
         <div class="modal-box">
             <h2>✏️ Editar Perfil de Usuario</h2>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.25rem;">Ajuste de parámetros y jerarquía</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.25rem;">Ajuste de parámetros, horario y estado</p>
             
             <input type="hidden" id="editOriginalExt">
             
@@ -427,6 +409,14 @@
                     <option value="agent">Agente</option>
                     <option value="supervisor">Supervisor</option>
                     <option value="coordinator">Coordinador</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>⚡ Estado Operativo (Forzar Cambio)</label>
+                <select id="editStatus">
+                    <option value="offline">⚪ Desconectado</option>
+                    <option value="ready">🟢 Disponible</option>
+                    <option value="break">🔵 En Pausa</option>
                 </select>
             </div>
             <div class="form-row" style="margin-bottom:0;">
@@ -453,6 +443,53 @@
             <div style="display:flex; gap:10px; margin-top:1.25rem;">
                 <button onclick="window.App.saveUserEdit()" class="btn btn-success" style="flex:1;">💾 Guardar</button>
                 <button onclick="window.App.closeEditModal()" class="btn btn-secondary" style="flex:1;">❌ Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE EDICIÓN DE EVENTO DE HISTORIAL -->
+    <div id="editLogModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2>✏️ Corregir Evento de Registro</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.25rem;">Modifica o rectifica un registro erróneo</p>
+            
+            <input type="hidden" id="editLogId">
+            
+            <div class="form-group">
+                <label>📌 Tipo de Evento</label>
+                <select id="editLogEventType" onchange="window.App.toggleLogBreakTypeSelect()">
+                    <option value="login">🔑 Ingreso (Login)</option>
+                    <option value="logout">🚪 Salida (Logout)</option>
+                    <option value="break">⏸️ Pausa / Break</option>
+                </select>
+            </div>
+
+            <div class="form-group" id="editLogBreakGroup">
+                <label>☕ Motivo de Pausa</label>
+                <select id="editLogBreakType">
+                    <option value="baño">🚻 Baño</option>
+                    <option value="comida">🍽️ Comida</option>
+                    <option value="break">☕ Break</option>
+                    <option value="capacitacion">📚 Capacitación</option>
+                    <option value="reunion">👥 Reunión</option>
+                    <option value="personal">💼 Personal</option>
+                    <option value="falla_tecnica">🔧 Técnico</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>⏱️ Duración Exacta (Minutos)</label>
+                <input type="number" id="editLogDurationMins" placeholder="Ej. 15" min="0" step="0.5">
+            </div>
+
+            <div class="form-group">
+                <label>📝 Detalle / Observación</label>
+                <input type="text" id="editLogDetails" placeholder="Ej. Pausa (COMIDA) - 30 min">
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:1.25rem;">
+                <button onclick="window.App.saveLogEdit()" class="btn btn-success" style="flex:1;">💾 Actualizar</button>
+                <button onclick="window.App.closeEditLogModal()" class="btn btn-secondary" style="flex:1;">❌ Cancelar</button>
             </div>
         </div>
     </div>
@@ -620,7 +657,7 @@
             </section>
         </div>
 
-        <!-- HISTORIAL -->
+        <!-- HISTORIAL CON ACCIONES DE EDICIÓN / CORRECCIÓN -->
         <section id="historySection">
             <h2>📋 Registro de Eventos Consolidado</h2>
             <div class="table-wrap">
@@ -634,10 +671,11 @@
                             <th>Evento</th>
                             <th>Detalle</th>
                             <th>Duración</th>
+                            <th id="historyActionHeader">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="historyTableBody">
-                        <tr><td colspan="7" style="text-align:center; color:var(--text-muted);">Sin registros acumulados</td></tr>
+                        <tr><td colspan="8" style="text-align:center; color:var(--text-muted);">Sin registros acumulados</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -795,8 +833,38 @@
                 } catch(e) { console.warn("Error agregando log:", e); }
             },
 
+            async updateLog(logId, updatedData) {
+                try {
+                    if (this.isCloud && this.firestoreDb) {
+                        await this.firestoreDb.collection('logs').doc(String(logId)).set(updatedData, { merge: true });
+                    } else {
+                        const store = this._readLocal();
+                        const idx = store.logs.findIndex(l => String(l.id) === String(logId));
+                        if (idx >= 0) {
+                            store.logs[idx] = { ...store.logs[idx], ...updatedData };
+                            this._writeLocal(store);
+                            this.logs = store.logs;
+                        }
+                    }
+                } catch(e) { console.warn("Error actualizando log:", e); }
+            },
+
+            async deleteLog(logId) {
+                try {
+                    if (this.isCloud && this.firestoreDb) {
+                        await this.firestoreDb.collection('logs').doc(String(logId)).delete();
+                    } else {
+                        const store = this._readLocal();
+                        store.logs = store.logs.filter(l => String(l.id) !== String(logId));
+                        this._writeLocal(store);
+                        this.logs = store.logs;
+                    }
+                } catch(e) { console.warn("Error eliminando log:", e); }
+            },
+
             getLogs() { return this.logs; },
-            getLogsByUser(ext) { return this.logs.filter(l => l.extension === ext); }
+            getLogsByUser(ext) { return this.logs.filter(l => l.extension === ext); },
+            getLogById(id) { return this.logs.find(l => String(l.id) === String(id)); }
         };
 
         // MOTOR WFM PRECISIÓN SEGUNDOS
@@ -1043,7 +1111,8 @@
                     const user = DB.getUserByExt(extInput);
                     
                     if (!user) {
-                        err.textContent = `❌ El ID "${extInput}" no existe. Para probar puedes usar A-00000 u AG-01.`;
+                        const localMsg = DB.isCloud ? '' : ' (Nota: La aplicación está en Modo Local. Para ver los registros creados en otra computadora, es necesario conectar Firebase).';
+                        err.textContent = `❌ El ID "${extInput}" no está registrado en este equipo.${localMsg}`;
                         err.style.display = 'block';
                         return;
                     }
@@ -1218,17 +1287,30 @@
 
             renderHistory() {
                 const tbody = document.getElementById('historyTableBody');
+                const isPrivileged = ['coordinator', 'supervisor'].includes(this.state.user?.role);
+                
+                // Mostrar u ocultar columna de acciones según el rol
+                const actionHeader = document.getElementById('historyActionHeader');
+                if (actionHeader) actionHeader.style.display = isPrivileged ? 'table-cell' : 'none';
+
                 const logs = DB.getLogs()
                     .filter(l => ['login', 'logout', 'break', 'break_end'].includes(l.eventType))
                     .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
-                    .slice(0, 30); 
+                    .slice(0, 40); 
                 
-                if(!logs.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin registros acumulados</td></tr>'; return; }
+                if(!logs.length) { tbody.innerHTML = `<tr><td colspan="${isPrivileged ? 8 : 7}" style="text-align:center;">Sin registros acumulados</td></tr>`; return; }
                 
                 tbody.innerHTML = logs.map(l => {
                     let dur = l.durationSeconds ? `${Math.floor(l.durationSeconds/60)} min` : '-';
                     let eventLabel = l.eventType === 'login' ? '🔑 Ingreso' : (l.eventType === 'logout' ? '🚪 Salida' : '⏸️ Pausa');
                     
+                    let actionCol = isPrivileged ? `
+                        <td>
+                            <button onclick="window.App.openEditLogModal('${l.id}')" class="btn btn-warning btn-sm" style="padding:0.25rem 0.5rem; font-size:0.75rem;">✏️ Edit</button>
+                            <button onclick="window.App.deleteLogEntry('${l.id}')" class="btn btn-danger btn-sm" style="padding:0.25rem 0.5rem; font-size:0.75rem;">🗑️ Borrar</button>
+                        </td>
+                    ` : '';
+
                     return `<tr>
                         <td>${l.date}</td><td>${l.time}</td>
                         <td><strong>${l.agentName}</strong> (${l.extension})</td>
@@ -1236,8 +1318,69 @@
                         <td><strong>${eventLabel}</strong></td>
                         <td>${l.details}</td>
                         <td>${dur}</td>
+                        ${actionCol}
                     </tr>`;
                 }).join('');
+            },
+
+            /* EDICIÓN Y BORRADO DE LOGS DE HISTORIAL */
+            openEditLogModal(logId) {
+                const log = DB.getLogById(logId);
+                if (!log) return alert("No se localizó el registro.");
+
+                document.getElementById('editLogId').value = log.id;
+                document.getElementById('editLogEventType').value = log.eventType || 'break';
+                document.getElementById('editLogBreakType').value = log.breakType || 'break';
+                document.getElementById('editLogDurationMins').value = log.durationSeconds ? (log.durationSeconds / 60).toFixed(1) : '0';
+                document.getElementById('editLogDetails').value = log.details || '';
+
+                this.toggleLogBreakTypeSelect();
+                document.getElementById('editLogModal').classList.remove('hidden');
+            },
+
+            closeEditLogModal() {
+                document.getElementById('editLogModal').classList.add('hidden');
+            },
+
+            toggleLogBreakTypeSelect() {
+                const evtType = document.getElementById('editLogEventType').value;
+                document.getElementById('editLogBreakGroup').style.display = (evtType === 'break') ? 'block' : 'none';
+            },
+
+            async saveLogEdit() {
+                const logId = document.getElementById('editLogId').value;
+                const log = DB.getLogById(logId);
+                if (!log) return alert("Error al localizar el registro.");
+
+                const evtType = document.getElementById('editLogEventType').value;
+                const breakType = document.getElementById('editLogBreakType').value;
+                const durMins = parseFloat(document.getElementById('editLogDurationMins').value) || 0;
+                const details = document.getElementById('editLogDetails').value.trim();
+
+                const updatedData = {
+                    eventType: evtType,
+                    details: details
+                };
+
+                if (evtType === 'break') {
+                    updatedData.breakType = breakType;
+                    updatedData.durationSeconds = Math.round(durMins * 60);
+                } else {
+                    updatedData.breakType = null;
+                    updatedData.durationSeconds = 0;
+                }
+
+                await DB.updateLog(logId, updatedData);
+                alert("✅ Registro actualizado con éxito. Las métricas se han recalculado.");
+                this.closeEditLogModal();
+                this.refreshActiveViews();
+            },
+
+            async deleteLogEntry(logId) {
+                if (!confirm("⚠️ ¿Estás seguro de que deseas eliminar permanentemente este registro del historial? Esto recalculará las métricas.")) return;
+                await DB.deleteLog(logId);
+                alert("🗑️ Registro eliminado exitosamente.");
+                this.refreshActiveViews();
             },
 
             renderSupTable() {
@@ -1336,6 +1479,7 @@
                 document.getElementById('editExt').value = user.extension;
                 document.getElementById('editName').value = user.name;
                 document.getElementById('editRole').value = user.role;
+                document.getElementById('editStatus').value = user.status || 'offline';
                 document.getElementById('editSupervisor').value = user.supervisor || '';
                 document.getElementById('editCoordinator').value = user.coordinator || '';
                 document.getElementById('editScheduleStart').value = user.scheduleStart || '09:00';
@@ -1358,6 +1502,7 @@
 
                 user.name = newName;
                 user.role = document.getElementById('editRole').value;
+                user.status = document.getElementById('editStatus').value;
                 user.supervisor = document.getElementById('editSupervisor').value;
                 user.coordinator = document.getElementById('editCoordinator').value;
                 user.scheduleStart = document.getElementById('editScheduleStart').value;

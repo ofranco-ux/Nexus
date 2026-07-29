@@ -17,7 +17,6 @@
         :root {
             --font-main: 'Inter', system-ui, -apple-system, sans-serif;
             
-            /* Paleta Claro */
             --bg-app: #f8fafc;
             --bg-surface: #ffffff;
             --bg-subtle: #f1f5f9;
@@ -365,11 +364,11 @@
             
             <div class="form-group">
                 <label>👤 Nombre Completo</label>
-                <input type="text" id="loginName" placeholder="Ej. Jorge Padilla">
+                <input type="text" id="loginName" placeholder="Ej. Juan Pérez">
             </div>
             <div class="form-group">
                 <label>🆔 ID / Extensión</label>
-                <input type="text" id="loginExt" placeholder="Ej. A-38873">
+                <input type="text" id="loginExt" placeholder="Ej. ID-1001">
             </div>
             <div class="form-group">
                 <label>🎯 Rol Operativo</label>
@@ -636,7 +635,7 @@
             appId: "TU_APP_ID"
         };
 
-        // MOTOR DE BASE DE DATOS HÍBRIDO (LOCAL / FIREBASE)
+        // MOTOR DE BASE DE DATOS HÍBRIDO
         const DB = {
             isCloud: false,
             firestoreDb: null,
@@ -657,7 +656,6 @@
             },
 
             init(onSyncCallback) {
-                // Verificar si se configuró Firebase realmente
                 if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "TU_API_KEY_AQUI") {
                     try {
                         firebase.initializeApp(firebaseConfig);
@@ -666,7 +664,6 @@
                         document.getElementById('syncBadge').textContent = 'Cloud Sync';
                         document.getElementById('syncBadge').style.color = 'var(--success)';
 
-                        // Escuchar Firestore
                         this.firestoreDb.collection('users').onSnapshot(snapshot => {
                             this.users = [];
                             snapshot.forEach(doc => this.users.push(doc.data()));
@@ -685,7 +682,6 @@
                     }
                 }
 
-                // Modo Local
                 this.isCloud = false;
                 document.getElementById('syncBadge').textContent = 'Modo Local';
                 const localData = this._readLocal();
@@ -843,7 +839,7 @@
                 const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
                 const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
                 const s = String(seconds % 60).padStart(2, '0');
-                return `${h}:${m}:${s}`;
+                return ${h}:${m}:${s};
             },
 
             formatMinsToHHMMSS(totalMins) {
@@ -852,7 +848,7 @@
                 const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
                 const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
                 const s = String(totalSeconds % 60).padStart(2, '0');
-                return `${h}:${m}:${s}`;
+                return ${h}:${m}:${s};
             }
         };
 
@@ -872,24 +868,24 @@
                     const metrics = WFM.calcularMetricasDelDia(u.extension, today);
                     
                     const rowData = [
-                        `"${u.name}"`, 
-                        `"${u.extension}"`, 
-                        `"${u.status}"`, 
-                        `"${u.scheduleStart}-${u.scheduleEnd}"`, 
-                        `"${u.supervisor || '-'}"`, 
-                        `"${u.coordinator || '-'}"`,
+                        "${u.name}", 
+                        "${u.extension}", 
+                        "${u.status}", 
+                        "${u.scheduleStart}-${u.scheduleEnd}", 
+                        "${u.supervisor || '-'}", 
+                        "${u.coordinator || '-'}",
                         metrics.logins, 
                         metrics.pausasCount, 
-                        `"${metrics.adherencia.toFixed(2)}%"`, 
-                        `"${metrics.productividad.toFixed(2)}%"`, 
-                        `"${metrics.ocupacion.toFixed(2)}%"`,
-                        `="${WFM.formatMinsToHHMMSS(metrics.tiempoActivo)}"`, 
-                        `="${WFM.formatMinsToHHMMSS(metrics.tiempoPausaTotal)}"`,
-                        `="${WFM.formatMinsToHHMMSS(metrics.tiempoNetoDisponible)}"`
+                        "${metrics.adherencia.toFixed(2)}%", 
+                        "${metrics.productividad.toFixed(2)}%", 
+                        "${metrics.ocupacion.toFixed(2)}%",
+                        ="${WFM.formatMinsToHHMMSS(metrics.tiempoActivo)}", 
+                        ="${WFM.formatMinsToHHMMSS(metrics.tiempoPausaTotal)}",
+                        ="${WFM.formatMinsToHHMMSS(metrics.tiempoNetoDisponible)}"
                     ];
 
                     WFM.tiposDePausa.forEach(pt => {
-                        rowData.push(`="${WFM.formatMinsToHHMMSS(metrics.desglosePausas[pt] || 0)}"`);
+                        rowData.push(="${WFM.formatMinsToHHMMSS(metrics.desglosePausas[pt] || 0)}");
                     });
 
                     return rowData;
@@ -900,7 +896,7 @@
                 
                 const a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
-                a.download = `Nexus_Reporte_WFM_${new Date().toISOString().split('T')[0]}.csv`;
+                a.download = Nexus_Reporte_WFM_${new Date().toISOString().split('T')[0]}.csv;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
@@ -946,8 +942,8 @@
                 document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
                 document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
                 
-                document.getElementById(`tab-${tabId}`).classList.add('active');
-                document.querySelector(`.menu-item[data-tab="${tabId}"]`)?.classList.add('active');
+                document.getElementById(tab-${tabId}).classList.add('active');
+                document.querySelector(.menu-item[data-tab="${tabId}"])?.classList.add('active');
 
                 this.refreshActiveViews();
             },
@@ -962,7 +958,7 @@
                     badge.textContent = '🟢 Disponible';
                     badge.className = 'status-badge ready';
                 } else if (status === 'break') {
-                    badge.textContent = `🔵 Pausa (${type.toUpperCase()})`;
+                    badge.textContent = 🔵 Pausa (${type.toUpperCase()});
                     badge.className = 'status-badge break';
                 } else {
                     badge.textContent = '⚪ Desconectado';
@@ -971,39 +967,60 @@
             },
 
             async login() {
-                const name = document.getElementById('loginName').value.trim();
-                const ext = document.getElementById('loginExt').value.trim();
-                const role = document.getElementById('loginRole').value;
+                const nameInput = document.getElementById('loginName').value.trim();
+                const extInput = document.getElementById('loginExt').value.trim();
+                const roleInput = document.getElementById('loginRole').value;
                 const err = document.getElementById('loginError');
 
-                if (!name || !ext) { err.textContent = 'Ingresa todos los campos'; err.style.display = 'block'; return; }
-
-                const user = DB.getUserByExt(ext);
-                if (!user || user.name.toLowerCase() !== name.toLowerCase() || user.role !== role) {
-                    err.textContent = 'Credenciales no encontradas o incorrectas.'; err.style.display = 'block'; return;
+                if (!nameInput || !extInput) {
+                    err.textContent = '⚠️ Ingresa tu nombre completo y tu extensión.';
+                    err.style.display = 'block';
+                    return;
                 }
 
-                // BLOQUEO DOBLE SESIÓN (SOLO ACTIVO EN NUBE O SI SU ESTADO NO ES OFFLINE)
+                const user = DB.getUserByExt(extInput);
+                
+                if (!user) {
+                    err.textContent = ❌ El ID "${extInput}" no está registrado. Si eres nuevo, solicita tu alta en Administración.;
+                    err.style.display = 'block';
+                    return;
+                }
+
+                if (user.name.toLowerCase().trim() !== nameInput.toLowerCase().trim()) {
+                    err.textContent = ❌ El nombre no coincide con el ID registrado ("${user.name}").;
+                    err.style.display = 'block';
+                    return;
+                }
+
+                if (user.role !== roleInput) {
+                    const rolesMap = { 'agent': 'Agente', 'supervisor': 'Supervisor', 'coordinator': 'Coordinador' };
+                    err.textContent = ⚠️ Este ID tiene asignado el rol de "${rolesMap[user.role] || user.role}". Selecciona dicho rol para acceder.;
+                    err.style.display = 'block';
+                    return;
+                }
+
+                // BLOQUEO DOBLE SESIÓN
                 if (user.status !== 'offline') {
-                    const override = confirm('⚠️ Esta extensión tiene una sesión activa. ¿Deseas forzar el inicio de sesión?');
+                    const override = confirm('⚠️ Esta extensión figura con una sesión activa. ¿Deseas forzar el inicio de sesión aquí?');
                     if (!override) return;
                 }
 
+                err.style.display = 'none';
                 this.state.user = user;
                 this.state.sessionStart = Date.now();
                 await this.updateStatusUI('ready');
                 
-                if (role === 'agent') {
-                    await DB.addLog({ agentName: user.name, extension: ext, role, eventType: 'login', details: 'Ingreso al sistema' });
+                if (user.role === 'agent') {
+                    await DB.addLog({ agentName: user.name, extension: user.extension, role: user.role, eventType: 'login', details: 'Ingreso al sistema' });
                 }
 
                 document.getElementById('loginOverlay').classList.add('hidden');
                 document.getElementById('menuLogoutBtn').classList.remove('hidden');
                 this.updateMenuVisibility();
                 this.updateAgentDashboard();
-                this.switchTab(role === 'agent' ? 'agent' : role);
+                this.switchTab(user.role === 'agent' ? 'agent' : user.role);
                 
-                if (role === 'agent') {
+                if (user.role === 'agent') {
                     this.state.generalInterval = setInterval(() => this.updateAgentRealTime(), 1000);
                 }
             },
@@ -1053,7 +1070,7 @@
                 document.getElementById('breakMenu').style.display = 'none';
                 document.getElementById('agentControls').style.display = 'none';
                 document.getElementById('activeBreakBanner').style.display = 'flex';
-                document.getElementById('uiBreakLabel').textContent = `⏸️ PAUSA ACTIVA: ${type.toUpperCase()}`;
+                document.getElementById('uiBreakLabel').textContent = ⏸️ PAUSA ACTIVA: ${type.toUpperCase()};
 
                 this.state.breakInterval = setInterval(() => {
                     const segs = Math.floor((Date.now() - this.state.breakStart) / 1000);
@@ -1075,7 +1092,7 @@
                     eventType: 'break', 
                     breakType: this.state.breakType, 
                     durationSeconds: durationSegs, 
-                    details: `Pausa (${this.state.breakType.toUpperCase()}) - ${durationMins} min` 
+                    details: Pausa (${this.state.breakType.toUpperCase()}) - ${durationMins} min 
                 });
 
                 this.state.breakType = null;
@@ -1117,7 +1134,7 @@
                 
                 document.getElementById('uiAgentName').textContent = u.name;
                 document.getElementById('uiAgentExt').textContent = u.extension;
-                document.getElementById('uiAgentSchedule').textContent = `${u.scheduleStart} - ${u.scheduleEnd}`;
+                document.getElementById('uiAgentSchedule').textContent = ${u.scheduleStart} - ${u.scheduleEnd};
                 
                 this.updateAgentRealTime();
             },
@@ -1133,9 +1150,9 @@
                 
                 document.getElementById('statLogins').textContent = metrics.logins;
                 document.getElementById('statBreaks').textContent = metrics.pausasCount;
-                document.getElementById('statAdherence').textContent = `${metrics.adherencia.toFixed(2)}%`;
-                document.getElementById('statProductivity').textContent = `${metrics.productividad.toFixed(2)}%`;
-                document.getElementById('statOcupacion').textContent = `${metrics.ocupacion.toFixed(2)}%`;
+                document.getElementById('statAdherence').textContent = ${metrics.adherencia.toFixed(2)}%;
+                document.getElementById('statProductivity').textContent = ${metrics.productividad.toFixed(2)}%;
+                document.getElementById('statOcupacion').textContent = ${metrics.ocupacion.toFixed(2)}%;
             },
 
             renderHistory() {
@@ -1148,7 +1165,7 @@
                 if(!logs.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin registros acumulados</td></tr>'; return; }
                 
                 tbody.innerHTML = logs.map(l => {
-                    let dur = l.durationSeconds ? `${Math.floor(l.durationSeconds/60)} min` : '-';
+                    let dur = l.durationSeconds ? ${Math.floor(l.durationSeconds/60)} min : '-';
                     let eventLabel = l.eventType === 'login' ? '🔑 Ingreso' : (l.eventType === 'logout' ? '🚪 Salida' : '⏸️ Pausa');
                     
                     return `<tr>
@@ -1199,13 +1216,13 @@
                 if(!targetSel) return;
 
                 targetSel.innerHTML = '<option value="">Seleccionar Usuario...</option>' + 
-                    users.filter(u=>u.role==='agent' || u.role==='supervisor').map(u => `<option value="${u.extension}">${u.name} (${u.extension})</option>`).join('');
+                    users.filter(u=>u.role==='agent' || u.role==='supervisor').map(u => <option value="${u.extension}">${u.name} (${u.extension})</option>).join('');
                 
                 supSel.innerHTML = '<option value="">Asignar Supervisor...</option>' + 
-                    users.filter(u=>u.role==='supervisor').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+                    users.filter(u=>u.role==='supervisor').map(u => <option value="${u.name}">${u.name}</option>).join('');
 
                 coordSel.innerHTML = '<option value="">Asignar Coordinador...</option>' + 
-                    users.filter(u=>u.role==='coordinator').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+                    users.filter(u=>u.role==='coordinator').map(u => <option value="${u.name}">${u.name}</option>).join('');
             },
 
             async registerUser() {
@@ -1216,7 +1233,7 @@
                 if(DB.getUserByExt(ext)) return alert('Este ID ya está registrado.');
                 
                 await DB.saveUser({ name, extension: ext, role, status: 'offline', scheduleStart: '09:00', scheduleEnd: '18:00', supervisor: '', coordinator: '' });
-                alert('Usuario registrado exitosamente');
+                alert(✅ Usuario "${name}" registrado exitosamente.);
                 document.getElementById('newUserName').value = '';
                 document.getElementById('newUserExt').value = '';
                 this.refreshActiveViews();
@@ -1250,9 +1267,9 @@
                 const coordSel = document.getElementById('editCoordinator');
 
                 supSel.innerHTML = '<option value="">Sin Asignar</option>' + 
-                    users.filter(u=>u.role==='supervisor').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+                    users.filter(u=>u.role==='supervisor').map(u => <option value="${u.name}">${u.name}</option>).join('');
                 coordSel.innerHTML = '<option value="">Sin Asignar</option>' + 
-                    users.filter(u=>u.role==='coordinator').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+                    users.filter(u=>u.role==='coordinator').map(u => <option value="${u.name}">${u.name}</option>).join('');
 
                 document.getElementById('editOriginalExt').value = user.extension;
                 document.getElementById('editExt').value = user.extension;

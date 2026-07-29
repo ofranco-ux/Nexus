@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus - Contact Center Management</title>
+    
+    <!-- FUENTE INTER (GOOGLE FONTS) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           SISTEMA DE DISEÑO / TEMA NEXUS
+           ============================================================ */
+        :root {
+            --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+            
+            /* Paleta Claro */
+            --bg-app: #f8fafc;
+            --bg-surface: #ffffff;
+            --bg-subtle: #f1f5f9;
+            --bg-input: #ffffff;
+            --border-color: #e2e8f0;
+            --border-focus: #6366f1;
+            
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            
+            --success: #10b981;
+            --success-bg: #d1fae5;
+            --success-text: #065f46;
+            
+            --warning: #f59e0b;
+            --warning-bg: #fef3c7;
+            --warning-text: #92400e;
+            
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            
+            --info: #0ea5e9;
+            --info-bg: #e0f2fe;
+            --info-text: #075985;
+            
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07);
+            --shadow-lg: 0 10px 25px -5px rgb(0 0 0 / 0.08);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg-app: #090d16;
+            --bg-surface: #131c2e;
+            --bg-subtle: #1e293b;
+            --bg-input: #0f172a;
+            --border-color: #1e293b;
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --success-bg: #064e3b;
+            --success-text: #34d399;
+            
+            --warning-bg: #78350f;
+            --warning-text: #fcd34d;
+            
+            --info-bg: #0c4a6e;
+            --info-text: #38bdf8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-app);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 1.5rem;
+            transition: background-color 0.25s ease, color 0.25s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1350px;
+            margin: 0 auto;
+            background: var(--bg-surface);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        /* HEADER ESTRUCTURAL */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .brand-logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), #818cf8);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .brand h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .brand-badge {
+            font-size: 0.725rem;
+            padding: 3px 8px;
+            background: var(--bg-subtle);
+            color: var(--primary);
+            border-radius: 20px;
+            font-weight: 600;
+            border: 1px solid var(--border-color);
+        }
+
+        .clock {
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--bg-subtle);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .theme-toggle {
+            background: var(--bg-subtle);
+            border: 1px solid var(--border-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .theme-toggle:hover { background: var(--border-color); transform: scale(1.05); }
+
+        /* NAVEGACIÓN PRINCIPAL */
+        .main-menu {
+            display: flex;
+            gap: 0.4rem;
+            background: var(--bg-subtle);
+            padding: 0.4rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.75rem;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .menu-item {
+            padding: 0.65rem 1.2rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex: 1;
+            text-align: center;
+        }
+        .menu-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.5); }
+        .menu-item.active { background: var(--bg-surface); color: var(--primary); font-weight: 600; box-shadow: var(--shadow-sm); }
+        .menu-item.hidden { display: none !important; }
+        .btn-logout { color: var(--danger); font-weight: 600; flex: 0 1 auto; }
+        .btn-logout:hover { background: #fee2e2; color: var(--danger-hover); }
+
+        /* SECCIONES Y CONTENEDORES */
+        .tab-content { display: none; animation: fadeIn 0.25s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        section {
+            background: var(--bg-subtle);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        h2, h3, h4 { font-weight: 600; letter-spacing: -0.01em; margin-bottom: 1rem; }
+
+        /* FORMULARIOS Y CONTROLES */
+        .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 1rem; align-items: center; }
+        
+        input, select {
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-family: var(--font-main);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            flex: 1;
+            min-width: 160px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+
+        /* BOTONES STYLES */
+        .btn {
+            padding: 0.7rem 1.4rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: var(--font-main);
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+        .btn:active { transform: translateY(0); }
+        
+        .btn-primary { background: var(--primary); }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--success); }
+        .btn-warning { background: var(--warning); color: #000; }
+        .btn-secondary { background: var(--text-secondary); }
+        .btn-sm { padding: 0.45rem 0.9rem; font-size: 0.825rem; }
+
+        /* STATUS BADGES */
+        .status-badge {
+            padding: 0.35rem 0.9rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-badge.offline { background: var(--bg-subtle); color: var(--text-secondary); border: 1px solid var(--border-color); }
+        .status-badge.ready { background: var(--success-bg); color: var(--success-text); }
+        .status-badge.break { background: var(--info-bg); color: var(--info-text); }
+
+        /* TARJETAS DE ESTADÍSTICAS */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-top: 1rem; }
+        .stat-card {
+            background: var(--bg-surface);
+            padding: 1.25rem;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-2px); }
+        .stat-card .val { font-size: 1.6rem; font-weight: 700; margin-top: 0.3rem; color: var(--primary); letter-spacing: -0.02em; }
+        .stat-card .label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.05em; }
+
+        /* GRID PAUSAS */
+        .break-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 0.75rem; }
+        .break-btn {
+            padding: 0.85rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-surface);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            transition: all 0.2s;
+        }
+        .break-btn:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+
+        .active-break-banner {
+            background: var(--info-bg);
+            border-left: 4px solid var(--info);
+            padding: 1.25rem;
+            border-radius: var(--radius-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            color: var(--info-text);
+        }
+
+        /* TABLAS ELEGANTES */
+        .table-wrap { overflow-x: auto; background: var(--bg-surface); border-radius: var(--radius-sm); border: 1px solid var(--border-color); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+        th, td { padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--border-color); text-align: left; }
+        th { background: var(--bg-subtle); color: var(--text-secondary); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background: rgba(241, 245, 249, 0.5); }
+
+        /* MODALES ELEGANTES */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(15, 23, 42, 0.5);
+            display: flex; align-items: center; justify-content: center; z-index: 2000;
+            backdrop-filter: blur(6px);
+        }
+        .modal-overlay.hidden { display: none; }
+        .modal-box {
+            background: var(--bg-surface);
+            padding: 2.25rem;
+            border-radius: var(--radius-lg);
+            width: 90%; max-width: 440px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        .form-group { margin-bottom: 1.1rem; text-align: left; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.8rem; margin-bottom: 0.4rem; color: var(--text-secondary); }
+        .form-group input, .form-group select { width: 100%; }
+
+        .lock-icon { font-size: 2.8rem; margin-bottom: 0.8rem; display: block; opacity: 0.8; }
+    </style>
+
+    <!-- FIREBASE JS (COMPAT) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+
+    <!-- MODAL DE LOGIN -->
+    <div id="loginOverlay" class="modal-overlay">
+        <div class="modal-box" style="text-align:center;">
+            <div style="width:50px; height:50px; background:linear-gradient(135deg, var(--primary), #818cf8); border-radius:12px; margin:0 auto 1rem auto; display:flex; align-items:center; justify-content:center; color:white; font-size:1.5rem; font-weight:800;">N</div>
+            <h2>Acceso a Nexus</h2>
+            <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:1.5rem;">Ingresa tus credenciales operativas</p>
+            
+            <div class="form-group">
+                <label>👤 Nombre Completo</label>
+                <input type="text" id="loginName" placeholder="Ej. Jorge Padilla">
+            </div>
+            <div class="form-group">
+                <label>🆔 ID / Extensión</label>
+                <input type="text" id="loginExt" placeholder="Ej. A-38873">
+            </div>
+            <div class="form-group">
+                <label>🎯 Rol Operativo</label>
+                <select id="loginRole">
+                    <option value="agent">Agente</option>
+                    <option value="supervisor">Supervisor</option>
+                    <option value="coordinator">Coordinador</option>
+                </select>
+            </div>
+            <p id="loginError" style="color:var(--danger); font-size:0.825rem; display:none; margin-bottom:1rem; font-weight:600; text-align:left;"></p>
+            <button onclick="window.App.login()" class="btn btn-primary" style="width:100%; margin-top:0.5rem;">🔑 Iniciar Sesión</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE EDICIÓN DE USUARIO -->
+    <div id="editUserModal" class="modal-overlay hidden">
+        <div class="modal-box">
+            <h2>✏️ Editar Perfil de Usuario</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.25rem;">Ajuste de parámetros y jerarquía</p>
+            
+            <input type="hidden" id="editOriginalExt">
+            
+            <div class="form-group">
+                <label>👤 Nombre Completo</label>
+                <input type="text" id="editName">
+            </div>
+            <div class="form-group">
+                <label>🆔 ID / Extensión (Lectura)</label>
+                <input type="text" id="editExt" disabled style="background:var(--bg-subtle); cursor:not-allowed;">
+            </div>
+            <div class="form-group">
+                <label>🎯 Rol Asignado</label>
+                <select id="editRole">
+                    <option value="agent">Agente</option>
+                    <option value="supervisor">Supervisor</option>
+                    <option value="coordinator">Coordinador</option>
+                </select>
+            </div>
+            <div class="form-row" style="margin-bottom:0;">
+                <div class="form-group" style="flex:1;">
+                    <label>👨‍💼 Supervisor</label>
+                    <select id="editSupervisor"><option value="">Sin Asignar</option></select>
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>👔 Coordinador</label>
+                    <select id="editCoordinator"><option value="">Sin Asignar</option></select>
+                </div>
+            </div>
+            <div class="form-row" style="margin-bottom:0;">
+                <div class="form-group" style="flex:1;">
+                    <label>🕒 Hora Inicio</label>
+                    <input type="time" id="editScheduleStart">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>🕕 Hora Fin</label>
+                    <input type="time" id="editScheduleEnd">
+                </div>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:1.25rem;">
+                <button onclick="window.App.saveUserEdit()" class="btn btn-success" style="flex:1;">💾 Guardar</button>
+                <button onclick="window.App.closeEditModal()" class="btn btn-secondary" style="flex:1;">❌ Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR ESTRUCTURAL -->
+    <div class="container">
+        <header>
+            <div class="brand">
+                <div class="brand-logo">N</div>
+                <div>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <h1>Nexus</h1>
+                        <span class="brand-badge" id="syncBadge">Modo Local</span>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div id="clock" class="clock">00:00:00</div>
+                <button class="theme-toggle" onclick="window.App.toggleTheme()" id="themeBtn" title="Cambiar Tema">🌙</button>
+            </div>
+        </header>
+
+        <!-- MENÚ DE TABS -->
+        <nav class="main-menu" id="mainMenu">
+            <button class="menu-item active" data-tab="agent" onclick="window.App.switchTab('agent')">👤 Mi Panel Operativo</button>
+            <button class="menu-item hidden" data-tab="supervisor" onclick="window.App.switchTab('supervisor')">👨‍💼 Mi Equipo (Supervisión)</button>
+            <button class="menu-item hidden" data-tab="coordinator" onclick="window.App.switchTab('coordinator')">👔 Coordinación General</button>
+            <button class="menu-item hidden" data-tab="admin" onclick="window.App.switchTab('admin')">⚙️ Configuración</button>
+            <button class="menu-item btn-logout hidden" id="menuLogoutBtn" onclick="window.App.logout()">🚪 Salir</button>
+        </nav>
+
+        <!-- PANEL AGENTE -->
+        <div id="tab-agent" class="tab-content active">
+            <section id="agentLockedView" style="text-align:center; padding: 4rem 1rem;">
+                <span class="lock-icon">🔒</span>
+                <h3>Sesión Inactiva</h3>
+                <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.4rem;">Por favor inicia sesión con tu ID para acceder al panel de Nexus.</p>
+            </section>
+
+            <div id="agentActiveView" style="display:none;">
+                <section>
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:1.25rem;">
+                        <div>
+                            <h2 style="margin:0;">Hola, <span id="uiAgentName"></span></h2>
+                            <p style="color:var(--text-muted); font-size:0.875rem; margin-top:2px;">ID: <strong id="uiAgentExt"></strong> | Horario: <span id="uiAgentSchedule"></span></p>
+                        </div>
+                        <div style="text-align:right;">
+                            <span class="status-badge offline" id="uiStatusBadge">Desconectado</span>
+                            <div style="font-size:1.6rem; font-weight:700; font-variant-numeric:tabular-nums; margin-top:0.2rem; color:var(--primary);" id="uiActiveTimer">00:00:00</div>
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;" id="agentControls">
+                        <button class="btn btn-success" onclick="window.App.setReady()">🟢 Disponible</button>
+                        <button class="btn btn-warning" onclick="window.App.toggleBreakMenu()">⏸️ Solicitud de Pausa</button>
+                    </div>
+
+                    <div id="breakMenu" style="display:none; background:var(--bg-surface); padding:1.25rem; border-radius:var(--radius-sm); border:1px solid var(--border-color); margin-top:1rem;">
+                        <h4 style="margin-bottom:0.5rem; color:var(--text-secondary); font-size:0.9rem;">Selecciona el motivo de pausa:</h4>
+                        <div class="break-grid">
+                            <button class="break-btn" onclick="window.App.startBreak('baño')">🚻 Baño</button>
+                            <button class="break-btn" onclick="window.App.startBreak('comida')">🍽️ Comida</button>
+                            <button class="break-btn" onclick="window.App.startBreak('break')">☕ Break</button>
+                            <button class="break-btn" onclick="window.App.startBreak('capacitacion')">📚 Capacitación</button>
+                            <button class="break-btn" onclick="window.App.startBreak('reunion')">👥 Reunión</button>
+                            <button class="break-btn" onclick="window.App.startBreak('personal')">💼 Personal</button>
+                            <button class="break-btn" onclick="window.App.startBreak('falla_tecnica')">🔧 Técnico</button>
+                        </div>
+                    </div>
+
+                    <div id="activeBreakBanner" class="active-break-banner" style="display:none;">
+                        <div>
+                            <strong style="font-size:1rem;" id="uiBreakLabel">En Pausa</strong>
+                            <div style="font-size:1.3rem; font-weight:700; font-variant-numeric:tabular-nums; margin-top:2px;" id="uiBreakTimer">00:00:00</div>
+                        </div>
+                        <button class="btn btn-primary" onclick="window.App.endBreak()">✅ Retomar Disponibilidad</button>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>📊 Indicadores WFM del Día</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="label">Ingresos</div>
+                            <div class="val" id="statLogins">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="label">Pausas</div>
+                            <div class="val" id="statBreaks">0</div>
+                        </div>
+                        <div class="stat-card" style="border-top: 3px solid var(--info);">
+                            <div class="label">Adherencia</div>
+                            <div class="val" id="statAdherence" style="color:var(--info);">0.00%</div>
+                        </div>
+                        <div class="stat-card" style="border-top: 3px solid var(--success);">
+                            <div class="label">Productividad</div>
+                            <div class="val" id="statProductivity" style="color:var(--success);">0.00%</div>
+                        </div>
+                        <div class="stat-card" style="border-top: 3px solid var(--warning);">
+                            <div class="label">Ocupación</div>
+                            <div class="val" id="statOcupacion" style="color:var(--warning);">0.00%</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- PANEL SUPERVISOR -->
+        <div id="tab-supervisor" class="tab-content">
+            <section>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
+                    <h2>👨‍💼 Monitor de Agentes (Supervisión)</h2>
+                    <button class="btn btn-success btn-sm" onclick="window.App.exportCSV()">📥 Exportar Reporte CSV</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Agente</th><th>ID</th><th>Estado Actual</th><th>Campaña</th></tr></thead>
+                        <tbody id="supTableBody"><tr><td colspan="4" style="text-align:center;">Cargando agentes...</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- PANEL COORDINADOR -->
+        <div id="tab-coordinator" class="tab-content">
+            <section>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; flex-wrap:wrap; gap:10px;">
+                    <h2>👔 Control General (Coordinación)</h2>
+                    <button class="btn btn-success btn-sm" onclick="window.App.exportCSV()">📥 Exportar Reporte Global</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr><th>Usuario</th><th>Rol</th><th>Supervisor</th><th>Coordinador</th><th>Estado</th><th>Acciones</th></tr></thead>
+                        <tbody id="coordTableBody"><tr><td colspan="6" style="text-align:center;">Cargando usuarios...</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+        <!-- PANEL ADMIN -->
+        <div id="tab-admin" class="tab-content">
+            <section>
+                <h2>⚙️ Registro de Usuarios</h2>
+                <div class="form-row">
+                    <input type="text" id="newUserName" placeholder="Nombre completo">
+                    <input type="text" id="newUserExt" placeholder="ID / Extensión">
+                    <select id="newUserRole">
+                        <option value="agent">Agente</option>
+                        <option value="supervisor">Supervisor</option>
+                        <option value="coordinator">Coordinador</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="window.App.registerUser()">➕ Alta Usuario</button>
+                </div>
+                <hr style="border:0; border-top:1px solid var(--border-color); margin: 1.5rem 0;">
+                
+                <h3>Asignación de Jerarquías</h3>
+                <div class="form-row">
+                    <select id="assignTargetUser"><option value="">Seleccionar Usuario...</option></select>
+                    <select id="assignSupervisor"><option value="">Asignar Supervisor...</option></select>
+                    <select id="assignCoordinator"><option value="">Asignar Coordinador...</option></select>
+                    <input type="time" id="assignStart" value="09:00">
+                    <input type="time" id="assignEnd" value="18:00">
+                    <button class="btn btn-warning" onclick="window.App.saveAssignments()">💾 Guardar Asignación</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- HISTORIAL -->
+        <section id="historySection">
+            <h2>📋 Registro de Eventos Consolidado</h2>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Evento</th>
+                            <th>Detalle</th>
+                            <th>Duración</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody">
+                        <tr><td colspan="7" style="text-align:center; color:var(--text-muted);">Sin registros acumulados</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- CONTROLADOR HÍBRIDO NEXUS (LOCAL / CLOUD) -->
+    <script>
+        // 📌 INSERTA AQUÍ TUS CLAVES CUANDO VAYAS A CONECTAR FIREBASE
+        const firebaseConfig = {
+            apiKey: "TU_API_KEY_AQUI",
+            authDomain: "TU_PROYECTO.firebaseapp.com",
+            projectId: "TU_PROYECTO_ID",
+            storageBucket: "TU_PROYECTO.appspot.com",
+            messagingSenderId: "TU_SENDER_ID",
+            appId: "TU_APP_ID"
+        };
+
+        // MOTOR DE BASE DE DATOS HÍBRIDO (LOCAL / FIREBASE)
+        const DB = {
+            isCloud: false,
+            firestoreDb: null,
+            localKey: 'nexus_local_db',
+            users: [],
+            logs: [],
+
+            _readLocal() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.localKey)) || { users: [], logs: [], nextId: 1 };
+                } catch {
+                    return { users: [], logs: [], nextId: 1 };
+                }
+            },
+
+            _writeLocal(data) {
+                localStorage.setItem(this.localKey, JSON.stringify(data));
+            },
+
+            init(onSyncCallback) {
+                // Verificar si se configuró Firebase realmente
+                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "TU_API_KEY_AQUI") {
+                    try {
+                        firebase.initializeApp(firebaseConfig);
+                        this.firestoreDb = firebase.firestore();
+                        this.isCloud = true;
+                        document.getElementById('syncBadge').textContent = 'Cloud Sync';
+                        document.getElementById('syncBadge').style.color = 'var(--success)';
+
+                        // Escuchar Firestore
+                        this.firestoreDb.collection('users').onSnapshot(snapshot => {
+                            this.users = [];
+                            snapshot.forEach(doc => this.users.push(doc.data()));
+                            this._checkMasterUser();
+                            if (onSyncCallback) onSyncCallback();
+                        });
+
+                        this.firestoreDb.collection('logs').onSnapshot(snapshot => {
+                            this.logs = [];
+                            snapshot.forEach(doc => this.logs.push({ id: doc.id, ...doc.data() }));
+                            if (onSyncCallback) onSyncCallback();
+                        });
+                        return;
+                    } catch (e) {
+                        console.warn("Fallback a Local Storage debido a error en Firebase:", e);
+                    }
+                }
+
+                // Modo Local
+                this.isCloud = false;
+                document.getElementById('syncBadge').textContent = 'Modo Local';
+                const localData = this._readLocal();
+                this.users = localData.users;
+                this.logs = localData.logs;
+                this._checkMasterUser();
+                if (onSyncCallback) onSyncCallback();
+            },
+
+            _checkMasterUser() {
+                if (!this.users.some(u => u.extension === 'A-38873')) {
+                    this.saveUser({
+                        name: 'Jorge Padilla', extension: 'A-38873', role: 'coordinator',
+                        status: 'offline', scheduleStart: '09:00', scheduleEnd: '18:00', supervisor: '', coordinator: ''
+                    });
+                }
+            },
+
+            getUsers() { return this.users; },
+            
+            getUserByExt(ext) { 
+                return this.users.find(u => String(u.extension).toLowerCase() === String(ext).toLowerCase()); 
+            },
+
+            async saveUser(userObj) {
+                if (this.isCloud) {
+                    await this.firestoreDb.collection('users').doc(userObj.extension).set(userObj, { merge: true });
+                } else {
+                    const store = this._readLocal();
+                    const idx = store.users.findIndex(u => String(u.extension) === String(userObj.extension));
+                    if (idx >= 0) store.users[idx] = { ...store.users[idx], ...userObj };
+                    else store.users.push(userObj);
+                    this._writeLocal(store);
+                    this.users = store.users;
+                }
+            },
+
+            async updateStatus(ext, status) {
+                if (this.isCloud) {
+                    await this.firestoreDb.collection('users').doc(ext).set({ status }, { merge: true });
+                } else {
+                    const store = this._readLocal();
+                    const user = store.users.find(u => String(u.extension) === String(ext));
+                    if (user) { user.status = status; this._writeLocal(store); this.users = store.users; }
+                }
+            },
+
+            async addLog(entry) {
+                const now = new Date();
+                const log = {
+                    timestamp: now.toISOString(),
+                    date: now.toLocaleDateString('es-ES'),
+                    time: now.toLocaleTimeString('es-ES', { hour12: false }),
+                    ...entry
+                };
+
+                if (this.isCloud) {
+                    await this.firestoreDb.collection('logs').add(log);
+                } else {
+                    const store = this._readLocal();
+                    log.id = store.nextId++;
+                    store.logs.push(log);
+                    this._writeLocal(store);
+                    this.logs = store.logs;
+                }
+            },
+
+            getLogs() { return this.logs; },
+            getLogsByUser(ext) { return this.logs.filter(l => l.extension === ext); }
+        };
+
+        // MOTOR WFM PRECISIÓN SEGUNDOS
+        const WFM = {
+            pausasNoProductivas: ['personal', 'emergencia', 'break_excedido', 'falla_tecnica'],
+            tiposDePausa: ['baño', 'comida', 'break', 'capacitacion', 'reunion', 'personal', 'falla_tecnica', 'emergencia'],
+
+            calcularMetricasDelDia(userExt, dateStr) {
+                const user = DB.getUserByExt(userExt);
+                if (!user) return { logins: 0, pausasCount: 0, tiempoActivo: 0, tiempoPausaTotal: 0, tiempoNetoDisponible: 0, adherencia: 0, productividad: 0, ocupacion: 0, desglosePausas: {} };
+
+                const logs = DB.getLogsByUser(userExt).filter(l => l.date === dateStr);
+                
+                let tiempoActivoMin = 0;
+                let tiempoPausasNoProductivas = 0;
+                let tiempoPausasTotales = 0;
+                let totalLogins = 0;
+                let totalPausas = 0;
+                
+                let desglosePausas = {};
+                this.tiposDePausa.forEach(t => desglosePausas[t] = 0);
+
+                const sStart = user.scheduleStart || '09:00';
+                const sEnd = user.scheduleEnd || '18:00';
+                const [hIn, mIn] = sStart.split(':').map(Number);
+                const [hOut, mOut] = sEnd.split(':').map(Number);
+                let jornadaProgramadaMin = (hOut * 60 + mOut) - (hIn * 60 + mIn);
+                if (jornadaProgramadaMin <= 0) jornadaProgramadaMin = 480; 
+
+                let currentLogin = null;
+
+                logs.forEach(log => {
+                    const horaLog = new Date(log.timestamp).getTime();
+                    
+                    if (log.eventType === 'login') {
+                        currentLogin = horaLog;
+                        totalLogins++;
+                    } else if (log.eventType === 'logout' && currentLogin) {
+                        tiempoActivoMin += (horaLog - currentLogin) / 60000;
+                        currentLogin = null;
+                    }
+
+                    if (log.eventType === 'break_end' || log.eventType === 'break') {
+                        totalPausas++;
+                        const mins = (log.durationSeconds || 0) / 60;
+                        tiempoPausasTotales += mins;
+                        
+                        const pType = log.breakType || 'otro';
+                        if(desglosePausas[pType] !== undefined) {
+                            desglosePausas[pType] += mins;
+                        } else {
+                            desglosePausas[pType] = mins;
+                        }
+
+                        if (this.pausasNoProductivas.includes(pType)) {
+                            tiempoPausasNoProductivas += mins;
+                        }
+                    }
+                });
+
+                if (currentLogin && dateStr === new Date().toLocaleDateString('es-ES')) {
+                    tiempoActivoMin += (Date.now() - currentLogin) / 60000;
+                }
+
+                const tiempoProductivo = Math.max(0, tiempoActivoMin - tiempoPausasNoProductivas);
+                const tiempoNetoDisponible = Math.max(0, tiempoActivoMin - tiempoPausasTotales);
+                
+                const adherencia = jornadaProgramadaMin > 0 ? Number(((tiempoActivoMin / jornadaProgramadaMin) * 100).toFixed(2)) : 0;
+                const productividad = jornadaProgramadaMin > 0 ? Number(((tiempoProductivo / jornadaProgramadaMin) * 100).toFixed(2)) : 0;
+                const ocupacion = tiempoActivoMin > 0 ? Number(((tiempoNetoDisponible / tiempoActivoMin) * 100).toFixed(2)) : 0;
+
+                return {
+                    logins: totalLogins,
+                    pausasCount: totalPausas,
+                    tiempoActivo: tiempoActivoMin,
+                    tiempoPausaTotal: tiempoPausasTotales,
+                    tiempoNetoDisponible: tiempoNetoDisponible,
+                    adherencia: Math.min(100, adherencia),
+                    productividad: Math.min(100, productividad),
+                    ocupacion: Math.min(100, ocupacion),
+                    desglosePausas: desglosePausas
+                };
+            },
+
+            formatTimeStr(seconds) {
+                const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+                const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+                const s = String(seconds % 60).padStart(2, '0');
+                return `${h}:${m}:${s}`;
+            },
+
+            formatMinsToHHMMSS(totalMins) {
+                if (!totalMins || totalMins < 0) return '00:00:00';
+                const totalSeconds = Math.round(totalMins * 60);
+                const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+                const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+                const s = String(totalSeconds % 60).padStart(2, '0');
+                return `${h}:${m}:${s}`;
+            }
+        };
+
+        // EXPORTADOR CSV
+        const CSVExporter = {
+            generate() {
+                const today = new Date().toLocaleDateString('es-ES');
+                const users = DB.getUsers().filter(u => u.role === 'agent');
+                
+                if (!users.length) { alert('No hay agentes registrados.'); return; }
+
+                const baseHeaders = ['Agente', 'ID', 'Estado', 'Horario', 'Supervisor', 'Coordinador', 'Logins', 'Pausas', 'Adherencia', 'Productividad', 'Ocupación', 'Tiempo Conectado', 'Pausa Total', 'Tiempo Neto Disponible'];
+                const pauseHeaders = WFM.tiposDePausa.map(t => t.toUpperCase());
+                const headers = [...baseHeaders, ...pauseHeaders];
+                
+                const rows = users.map(u => {
+                    const metrics = WFM.calcularMetricasDelDia(u.extension, today);
+                    
+                    const rowData = [
+                        `"${u.name}"`, 
+                        `"${u.extension}"`, 
+                        `"${u.status}"`, 
+                        `"${u.scheduleStart}-${u.scheduleEnd}"`, 
+                        `"${u.supervisor || '-'}"`, 
+                        `"${u.coordinator || '-'}"`,
+                        metrics.logins, 
+                        metrics.pausasCount, 
+                        `"${metrics.adherencia.toFixed(2)}%"`, 
+                        `"${metrics.productividad.toFixed(2)}%"`, 
+                        `"${metrics.ocupacion.toFixed(2)}%"`,
+                        `="${WFM.formatMinsToHHMMSS(metrics.tiempoActivo)}"`, 
+                        `="${WFM.formatMinsToHHMMSS(metrics.tiempoPausaTotal)}"`,
+                        `="${WFM.formatMinsToHHMMSS(metrics.tiempoNetoDisponible)}"`
+                    ];
+
+                    WFM.tiposDePausa.forEach(pt => {
+                        rowData.push(`="${WFM.formatMinsToHHMMSS(metrics.desglosePausas[pt] || 0)}"`);
+                    });
+
+                    return rowData;
+                });
+
+                const csvStr = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+                const blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8;' });
+                
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = `Nexus_Reporte_WFM_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(a.href);
+            }
+        };
+
+        // CONTROLADOR APP
+        window.App = {
+            state: { user: null, sessionStart: null, breakType: null, breakStart: null, breakInterval: null, generalInterval: null },
+            
+            init() {
+                DB.init(() => this.refreshActiveViews());
+                this.updateClock();
+                setInterval(() => this.updateClock(), 1000);
+                if(localStorage.getItem('nexus_theme') === 'dark') this.toggleTheme(true);
+            },
+
+            refreshActiveViews() {
+                const activeTab = document.querySelector('.menu-item.active')?.getAttribute('data-tab');
+                if (activeTab === 'supervisor') this.renderSupTable();
+                if (activeTab === 'coordinator') this.renderCoordTable();
+                if (activeTab === 'admin') this.populateAdminSelects();
+                this.renderHistory();
+                if (this.state.user) this.updateAgentRealTime();
+            },
+
+            updateClock() {
+                const el = document.getElementById('clock');
+                if (el) el.textContent = new Date().toLocaleString('es-ES', { weekday:'short', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+            },
+
+            toggleTheme(forceDark = false) {
+                const isDark = forceDark || document.documentElement.getAttribute('data-theme') !== 'dark';
+                document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+                document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
+                localStorage.setItem('nexus_theme', isDark ? 'dark' : 'light');
+            },
+
+            switchTab(tabId) {
+                if(!this.state.user && tabId !== 'agent') return; 
+                
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+                document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+                
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+                document.querySelector(`.menu-item[data-tab="${tabId}"]`)?.classList.add('active');
+
+                this.refreshActiveViews();
+            },
+
+            updateStatusUI(status, type = '') {
+                if (!this.state.user) return;
+                DB.updateStatus(this.state.user.extension, status);
+                const badge = document.getElementById('uiStatusBadge');
+                if (!badge) return;
+
+                if (status === 'ready') {
+                    badge.textContent = '🟢 Disponible';
+                    badge.className = 'status-badge ready';
+                } else if (status === 'break') {
+                    badge.textContent = `🔵 Pausa (${type.toUpperCase()})`;
+                    badge.className = 'status-badge break';
+                } else {
+                    badge.textContent = '⚪ Desconectado';
+                    badge.className = 'status-badge offline';
+                }
+            },
+
+            async login() {
+                const name = document.getElementById('loginName').value.trim();
+                const ext = document.getElementById('loginExt').value.trim();
+                const role = document.getElementById('loginRole').value;
+                const err = document.getElementById('loginError');
+
+                if (!name || !ext) { err.textContent = 'Ingresa todos los campos'; err.style.display = 'block'; return; }
+
+                const user = DB.getUserByExt(ext);
+                if (!user || user.name.toLowerCase() !== name.toLowerCase() || user.role !== role) {
+                    err.textContent = 'Credenciales no encontradas o incorrectas.'; err.style.display = 'block'; return;
+                }
+
+                // BLOQUEO DOBLE SESIÓN (SOLO ACTIVO EN NUBE O SI SU ESTADO NO ES OFFLINE)
+                if (user.status !== 'offline') {
+                    const override = confirm('⚠️ Esta extensión tiene una sesión activa. ¿Deseas forzar el inicio de sesión?');
+                    if (!override) return;
+                }
+
+                this.state.user = user;
+                this.state.sessionStart = Date.now();
+                await this.updateStatusUI('ready');
+                
+                if (role === 'agent') {
+                    await DB.addLog({ agentName: user.name, extension: ext, role, eventType: 'login', details: 'Ingreso al sistema' });
+                }
+
+                document.getElementById('loginOverlay').classList.add('hidden');
+                document.getElementById('menuLogoutBtn').classList.remove('hidden');
+                this.updateMenuVisibility();
+                this.updateAgentDashboard();
+                this.switchTab(role === 'agent' ? 'agent' : role);
+                
+                if (role === 'agent') {
+                    this.state.generalInterval = setInterval(() => this.updateAgentRealTime(), 1000);
+                }
+            },
+
+            async logout() {
+                if (!this.state.user) return;
+                const u = this.state.user;
+                
+                if (this.state.breakType) await this.endBreak(true);
+
+                if (u.role === 'agent') {
+                    await DB.addLog({ agentName: u.name, extension: u.extension, role: u.role, eventType: 'logout', details: 'Cierre de sesión' });
+                }
+                
+                await this.updateStatusUI('offline');
+                clearInterval(this.state.generalInterval);
+                this.state = { user: null, sessionStart: null, breakType: null, breakStart: null };
+                
+                document.getElementById('menuLogoutBtn').classList.add('hidden');
+                this.updateMenuVisibility();
+                this.switchTab('agent');
+                this.updateAgentDashboard(); 
+                
+                document.getElementById('loginOverlay').classList.remove('hidden');
+                document.getElementById('loginName').value = '';
+                document.getElementById('loginExt').value = '';
+            },
+
+            setReady() {
+                if(this.state.breakType) this.endBreak(true);
+                this.updateStatusUI('ready');
+            },
+
+            toggleBreakMenu() {
+                const m = document.getElementById('breakMenu');
+                m.style.display = m.style.display === 'none' ? 'block' : 'none';
+            },
+
+            startBreak(type) {
+                if (this.state.breakType) return alert('Ya cuentas con una pausa activa.');
+                
+                this.state.breakType = type;
+                this.state.breakStart = Date.now();
+                
+                this.updateStatusUI('break', type);
+                
+                document.getElementById('breakMenu').style.display = 'none';
+                document.getElementById('agentControls').style.display = 'none';
+                document.getElementById('activeBreakBanner').style.display = 'flex';
+                document.getElementById('uiBreakLabel').textContent = `⏸️ PAUSA ACTIVA: ${type.toUpperCase()}`;
+
+                this.state.breakInterval = setInterval(() => {
+                    const segs = Math.floor((Date.now() - this.state.breakStart) / 1000);
+                    document.getElementById('uiBreakTimer').textContent = WFM.formatTimeStr(segs);
+                }, 1000);
+            },
+
+            async endBreak(silent = false) {
+                if(!this.state.breakType) return;
+                clearInterval(this.state.breakInterval);
+                
+                const durationSegs = Math.floor((Date.now() - this.state.breakStart) / 1000);
+                const durationMins = Math.max(1, Math.floor(durationSegs / 60));
+                
+                await DB.addLog({ 
+                    agentName: this.state.user.name, 
+                    extension: this.state.user.extension, 
+                    role: this.state.user.role,
+                    eventType: 'break', 
+                    breakType: this.state.breakType, 
+                    durationSeconds: durationSegs, 
+                    details: `Pausa (${this.state.breakType.toUpperCase()}) - ${durationMins} min` 
+                });
+
+                this.state.breakType = null;
+                this.state.breakStart = null;
+                
+                document.getElementById('activeBreakBanner').style.display = 'none';
+                document.getElementById('agentControls').style.display = 'flex';
+                
+                this.updateStatusUI('ready');
+                if(!silent) this.updateAgentRealTime();
+            },
+
+            updateMenuVisibility() {
+                const role = this.state.user ? this.state.user.role : null;
+                const map = {
+                    'agent': ['agent'],
+                    'supervisor': ['agent', 'supervisor'],
+                    'coordinator': ['agent', 'supervisor', 'coordinator', 'admin']
+                };
+                const visible = map[role] || ['agent'];
+                
+                document.querySelectorAll('.main-menu .menu-item').forEach(el => {
+                    if(el.id === 'menuLogoutBtn') return;
+                    if(visible.includes(el.getAttribute('data-tab'))) el.classList.remove('hidden');
+                    else el.classList.add('hidden');
+                });
+            },
+
+            updateAgentDashboard() {
+                const u = this.state.user;
+                if (!u) {
+                    document.getElementById('agentLockedView').style.display = 'block';
+                    document.getElementById('agentActiveView').style.display = 'none';
+                    return;
+                }
+                
+                document.getElementById('agentLockedView').style.display = 'none';
+                document.getElementById('agentActiveView').style.display = 'block';
+                
+                document.getElementById('uiAgentName').textContent = u.name;
+                document.getElementById('uiAgentExt').textContent = u.extension;
+                document.getElementById('uiAgentSchedule').textContent = `${u.scheduleStart} - ${u.scheduleEnd}`;
+                
+                this.updateAgentRealTime();
+            },
+
+            updateAgentRealTime() {
+                if (!this.state.user || this.state.user.role !== 'agent') return;
+                
+                const segsActivos = Math.floor((Date.now() - this.state.sessionStart) / 1000);
+                document.getElementById('uiActiveTimer').textContent = WFM.formatTimeStr(segsActivos);
+
+                const today = new Date().toLocaleDateString('es-ES');
+                const metrics = WFM.calcularMetricasDelDia(this.state.user.extension, today);
+                
+                document.getElementById('statLogins').textContent = metrics.logins;
+                document.getElementById('statBreaks').textContent = metrics.pausasCount;
+                document.getElementById('statAdherence').textContent = `${metrics.adherencia.toFixed(2)}%`;
+                document.getElementById('statProductivity').textContent = `${metrics.productividad.toFixed(2)}%`;
+                document.getElementById('statOcupacion').textContent = `${metrics.ocupacion.toFixed(2)}%`;
+            },
+
+            renderHistory() {
+                const tbody = document.getElementById('historyTableBody');
+                const logs = DB.getLogs()
+                    .filter(l => ['login', 'logout', 'break', 'break_end'].includes(l.eventType))
+                    .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .slice(0, 30); 
+                
+                if(!logs.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Sin registros acumulados</td></tr>'; return; }
+                
+                tbody.innerHTML = logs.map(l => {
+                    let dur = l.durationSeconds ? `${Math.floor(l.durationSeconds/60)} min` : '-';
+                    let eventLabel = l.eventType === 'login' ? '🔑 Ingreso' : (l.eventType === 'logout' ? '🚪 Salida' : '⏸️ Pausa');
+                    
+                    return `<tr>
+                        <td>${l.date}</td><td>${l.time}</td>
+                        <td><strong>${l.agentName}</strong> (${l.extension})</td>
+                        <td><span class="status-badge offline">${l.role || '-'}</span></td>
+                        <td><strong>${eventLabel}</strong></td>
+                        <td>${l.details}</td>
+                        <td>${dur}</td>
+                    </tr>`;
+                }).join('');
+            },
+
+            renderSupTable() {
+                if(this.state.user?.role !== 'supervisor' && this.state.user?.role !== 'coordinator') return;
+                const agents = DB.getUsers().filter(u => u.role === 'agent' && (this.state.user.role==='coordinator' || u.supervisor === this.state.user.name));
+                const tbody = document.getElementById('supTableBody');
+                if(!agents.length) { tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Sin agentes asignados</td></tr>'; return; }
+                
+                tbody.innerHTML = agents.map(a => `<tr>
+                    <td><strong>${a.name}</strong></td><td>${a.extension}</td>
+                    <td><span class="status-badge ${a.status||'offline'}">${a.status||'offline'}</span></td>
+                    <td>${a.campaign || '-'}</td>
+                </tr>`).join('');
+            },
+
+            renderCoordTable() {
+                if(this.state.user?.role !== 'coordinator') return;
+                const users = DB.getUsers();
+                const tbody = document.getElementById('coordTableBody');
+                
+                tbody.innerHTML = users.map(u => `<tr>
+                    <td><strong>${u.name}</strong><br><small style="color:var(--text-muted);">${u.extension}</small></td>
+                    <td>${u.role}</td>
+                    <td>${u.supervisor || '-'}</td>
+                    <td>${u.coordinator || '-'}</td>
+                    <td><span class="status-badge ${u.status||'offline'}">${u.status||'offline'}</span></td>
+                    <td><button onclick="window.App.openEditModal('${u.extension}')" class="btn btn-warning btn-sm">✏️ Editar</button></td>
+                </tr>`).join('');
+            },
+
+            populateAdminSelects() {
+                const users = DB.getUsers();
+                const targetSel = document.getElementById('assignTargetUser');
+                const supSel = document.getElementById('assignSupervisor');
+                const coordSel = document.getElementById('assignCoordinator');
+                
+                if(!targetSel) return;
+
+                targetSel.innerHTML = '<option value="">Seleccionar Usuario...</option>' + 
+                    users.filter(u=>u.role==='agent' || u.role==='supervisor').map(u => `<option value="${u.extension}">${u.name} (${u.extension})</option>`).join('');
+                
+                supSel.innerHTML = '<option value="">Asignar Supervisor...</option>' + 
+                    users.filter(u=>u.role==='supervisor').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+
+                coordSel.innerHTML = '<option value="">Asignar Coordinador...</option>' + 
+                    users.filter(u=>u.role==='coordinator').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+            },
+
+            async registerUser() {
+                const name = document.getElementById('newUserName').value.trim();
+                const ext = document.getElementById('newUserExt').value.trim();
+                const role = document.getElementById('newUserRole').value;
+                if(!name || !ext) return alert('Completa nombre e ID');
+                if(DB.getUserByExt(ext)) return alert('Este ID ya está registrado.');
+                
+                await DB.saveUser({ name, extension: ext, role, status: 'offline', scheduleStart: '09:00', scheduleEnd: '18:00', supervisor: '', coordinator: '' });
+                alert('Usuario registrado exitosamente');
+                document.getElementById('newUserName').value = '';
+                document.getElementById('newUserExt').value = '';
+                this.refreshActiveViews();
+            },
+
+            async saveAssignments() {
+                const ext = document.getElementById('assignTargetUser').value;
+                const sup = document.getElementById('assignSupervisor').value;
+                const coord = document.getElementById('assignCoordinator').value;
+                const start = document.getElementById('assignStart').value;
+                const end = document.getElementById('assignEnd').value;
+                
+                if(!ext) return alert('Selecciona un usuario');
+                
+                const user = DB.getUserByExt(ext);
+                user.supervisor = sup;
+                user.coordinator = coord;
+                user.scheduleStart = start;
+                user.scheduleEnd = end;
+                await DB.saveUser(user);
+                alert('Asignación guardada con éxito.');
+                this.refreshActiveViews();
+            },
+
+            openEditModal(ext) {
+                const user = DB.getUserByExt(ext);
+                if(!user) return alert('Usuario no encontrado');
+
+                const users = DB.getUsers();
+                const supSel = document.getElementById('editSupervisor');
+                const coordSel = document.getElementById('editCoordinator');
+
+                supSel.innerHTML = '<option value="">Sin Asignar</option>' + 
+                    users.filter(u=>u.role==='supervisor').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+                coordSel.innerHTML = '<option value="">Sin Asignar</option>' + 
+                    users.filter(u=>u.role==='coordinator').map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+
+                document.getElementById('editOriginalExt').value = user.extension;
+                document.getElementById('editExt').value = user.extension;
+                document.getElementById('editName').value = user.name;
+                document.getElementById('editRole').value = user.role;
+                document.getElementById('editSupervisor').value = user.supervisor || '';
+                document.getElementById('editCoordinator').value = user.coordinator || '';
+                document.getElementById('editScheduleStart').value = user.scheduleStart || '09:00';
+                document.getElementById('editScheduleEnd').value = user.scheduleEnd || '18:00';
+
+                document.getElementById('editUserModal').classList.remove('hidden');
+            },
+
+            closeEditModal() {
+                document.getElementById('editUserModal').classList.add('hidden');
+            },
+
+            async saveUserEdit() {
+                const ext = document.getElementById('editOriginalExt').value;
+                const user = DB.getUserByExt(ext);
+                if(!user) return alert('Error al localizar usuario');
+
+                const newName = document.getElementById('editName').value.trim();
+                if(!newName) return alert('El nombre no puede ir vacío');
+
+                user.name = newName;
+                user.role = document.getElementById('editRole').value;
+                user.supervisor = document.getElementById('editSupervisor').value;
+                user.coordinator = document.getElementById('editCoordinator').value;
+                user.scheduleStart = document.getElementById('editScheduleStart').value;
+                user.scheduleEnd = document.getElementById('editScheduleEnd').value;
+
+                await DB.saveUser(user);
+                alert('Datos de usuario actualizados.');
+                this.closeEditModal();
+                this.refreshActiveViews();
+            },
+
+            exportCSV() { CSVExporter.generate(); }
+        };
+
+        // INICIALIZACIÓN
+        document.addEventListener('DOMContentLoaded', () => window.App.init());
+    </script>
+</body>
+</html>
